@@ -1,21 +1,19 @@
-:::writing{variant="document" id="84127"}
 name: Build Docker Image
 
 on:
-  push:
-    branches:
-      - main
+push:
+branches:
+- main
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
+build:
+runs-on: ubuntu-latest
 
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
 
-      - name: Build Docker Image
-        run: docker build -t ai-devops-copilot .
-:::
+steps:
+  - name: Checkout Repository
+    uses: actions/checkout@v4
 
----
+  - name: Build Docker Image
+    run: docker build -t ai-devops-copilot .
+
