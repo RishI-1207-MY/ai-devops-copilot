@@ -1,0 +1,16 @@
+2026-06-19 10:00:01 INFO Application started successfully
+2026-06-19 10:00:05 INFO Database connection established
+2026-06-19 10:01:30 WARNING High memory usage detected: 78%
+2026-06-19 10:02:20 ERROR Database query timeout
+2026-06-19 10:02:21 ERROR Failed to fetch order details
+2026-06-19 10:03:05 INFO Database connection restored
+2026-06-19 10:04:12 WARNING CPU utilization exceeded threshold: 85%
+2026-06-19 10:05:30 INFO File upload completed
+2026-06-19 10:06:00 ERROR Payment service timeout
+2026-06-19 10:06:05 ERROR Transaction processing failed
+2026-06-19 10:07:10 WARNING Disk space low: 15% remaining
+2026-06-19 10:08:45 INFO Scheduled backup completed
+2026-06-19 10:09:15 ERROR Redis connection lost
+2026-06-19 10:10:00 INFO Redis service restarted
+2026-06-19 10:11:00 WARNING API response time increased to 2.5s
+2026-06-19 10:12:15 INFO Health check passed  
