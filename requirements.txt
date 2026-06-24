@@ -6,7 +6,7 @@ pandas
 plotly
 langchain
 langchain-community
-
 python-multipart
-
 faiss-cpu
+numpy
+prometheus-client
