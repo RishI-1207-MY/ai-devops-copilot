@@ -1,22 +1,17 @@
 import numpy as np
 
 from rag.embeddings import get_embedding
-from rag.vector_store import (
-    index,
-    documents
-)
+from rag.vector_store import index, documents
 
 def search_logs(query, k=3):
 
     if len(documents) == 0:
-        return [
-            "No logs uploaded yet."
-        ]
+        return ["No logs have been indexed yet"]
 
     query_vector = get_embedding(query)
 
     distances, indices = index.search(
-        np.array(query_vector),
+        np.array(query_vector).astype("float32"),
         min(k, len(documents))
     )
 
@@ -24,7 +19,8 @@ def search_logs(query, k=3):
 
     for idx in indices[0]:
 
-        if idx < len(documents):
+        if idx >= 0 and idx < len(documents):
+
             results.append(
                 documents[idx]
             )
