@@ -6,8 +6,7 @@ pandas
 plotly
 langchain
 langchain-community
-ollama
+
 python-multipart
-transformers
-sentence-transformers
+
 faiss-cpu

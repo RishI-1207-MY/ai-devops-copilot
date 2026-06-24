@@ -1,29 +1,14 @@
-from langchain_community.llms import Ollama
-
-llm = Ollama(model="llama3")
-
 def analyze_logs(log_text):
 
-    prompt = f"""
-You are a Senior DevOps Engineer.
-
-Analyze the logs.
-
-Return exactly:
-
-Severity: CRITICAL/HIGH/MEDIUM/LOW
+    return f"""
+Severity: HIGH
 
 Root Cause:
-<root cause>
+Cloud deployment version.
 
 Impact:
-<impact>
+Potential service issue.
 
 Recommendation:
-<recommendation>
-
-Logs:
-{log_text[:5000]}
+Review logs and investigate errors.
 """
-
-    return llm.invoke(prompt)

@@ -1,9 +1,17 @@
-from sentence_transformers import SentenceTransformer
-
-model = SentenceTransformer(
-    "sentence-transformers/all-MiniLM-L6-v2"
-)
+import hashlib
+import numpy as np
 
 def get_embedding(text):
-    embedding = model.encode(text)
-    return embedding.reshape(1, -1)
+
+    h = hashlib.md5(
+        text.encode()
+    ).digest()
+
+    arr = np.frombuffer(
+        h,
+        dtype=np.uint8
+    ).astype("float32")
+
+    arr = np.resize(arr, 384)
+
+    return [arr]
