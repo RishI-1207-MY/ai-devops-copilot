@@ -2,6 +2,7 @@ import streamlit as st
 import requests
 import pandas as pd
 import plotly.express as px  # type: ignore[import]
+BACKEND_URL = "http://3.106.132.88:8000"
 st.set_page_config(
     page_title="AI DevOps Copilot",
     page_icon="🤖",
@@ -13,7 +14,7 @@ st.subheader("AI-Powered Log Analysis & Incident Detection")
 # ================= HISTORY =================
 
 try:
-    history = requests.get("http://127.0.0.1:8000/history")
+    history = requests.get(f"{BACKEND_URL}/history")
 
     if history.status_code == 200:
         data = history.json()
@@ -91,7 +92,7 @@ try:
 
     st.subheader("🧠 AI Incident Summary")
     if st.button("Generate Incident Summary"):
-        response = requests.get("http://127.0.0.1:8000/summary")
+        response = requests.get(f"{BACKEND_URL}/summary")
 
         if response.status_code == 200:
             result = response.json()
@@ -126,7 +127,7 @@ if uploaded_file is not None:
             }
 
             response = requests.post(
-                "http://127.0.0.1:8000/analyze-log",
+                f"{BACKEND_URL}/analyze-log",
                 files=files
             )
 
@@ -198,7 +199,7 @@ if uploaded_file is not None:
 
     if question:
         response = requests.get(
-            "http://127.0.0.1:8000/ask",
+            f"{BACKEND_URL}/ask",
             params={
                 "question": question
             }
