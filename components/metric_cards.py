@@ -1,4 +1,4 @@
- import streamlit as st
+import streamlit as st
 
 def metric_row(df):
     critical = len(df[df["Severity"] == "CRITICAL"])

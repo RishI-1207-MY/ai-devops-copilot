@@ -1,8 +1,7 @@
- import streamlit as st
+import streamlit as st
 from components.api import post
 from components.loading import ai_loading
 from components.ai_report import render_report
-from services.analysis_service import analyze_log
 
 st.set_page_config(
     page_title="AI Log Analyzer",

@@ -2,19 +2,47 @@ from fastapi import FastAPI, UploadFile, File
 from fastapi.responses import JSONResponse, Response
 # removed unused/incorrect imports
 from analyzer import analyze_logs
-from prometheus_client import Counter, generate_latest
 import os
 import sqlite3
 
 from database import create_db
-from utils import extract_severity
+from utils.helpers import extract_severity
 
 from rag.retriever import search_logs
 from rag.embeddings import get_embedding
 from rag.vector_store import add_document
 from rag.vector_store import documents
 
+from prometheus_client import (
+    Counter,
+    Histogram,
+    generate_latest
+)
 
+REQUEST_COUNT = Counter(
+    "api_requests_total",
+    "Total API Requests"
+)
+
+LOGS_ANALYZED = Counter(
+    "logs_analyzed_total",
+    "Total Logs Analysed"
+)
+
+CHAT_REQUESTS = Counter(
+    "chat_requests_total",
+    "Total AI Chat Requests"
+)
+
+ERROR_COUNT = Counter(
+    "detected_errors_total",
+    "Total Errors Detected"
+)
+
+REQUEST_TIME = Histogram(
+    "api_request_duration_seconds",
+    "API Request Duration"
+)
 
 def save_incident(filename, severity, root_cause, recommendation):
 
@@ -42,10 +70,6 @@ def save_incident(filename, severity, root_cause, recommendation):
 create_db()
 
 app = FastAPI()
-REQUEST_COUNT = Counter(
-"api_requests_total",
-"Total API Requests"
-)
 
 @app.get("/debug-rag")
 def debug_rag():
@@ -55,15 +79,6 @@ def debug_rag():
     }
     
 
-LOG_ANALYSIS_COUNT = Counter(
-"log_analysis_total",
-"Total Log Analyses"
-)
-
-ERROR_COUNT = Counter(
-"detected_errors_total",
-"Total Errors Detected"
-)
 
 
 UPLOAD_DIR = "uploads"
@@ -91,9 +106,10 @@ async def upload_log(file: UploadFile = File(...)):
         "filename": file.filename,
         "status": "uploaded successfully"
     }
-REQUEST_COUNT.inc()
+
 @app.get("/history")
 def get_history():
+    REQUEST_COUNT.inc()
 
     conn = sqlite3.connect("logs.db")
 
@@ -110,9 +126,10 @@ def get_history():
     conn.close()
 
     return rows
-REQUEST_COUNT.inc()
+
 @app.get("/summary")
 def get_summary():
+    REQUEST_COUNT.inc()
 
     conn = sqlite3.connect("logs.db")
 
@@ -141,17 +158,18 @@ def get_summary():
 
 @app.get("/ask")
 def ask_logs(question: str):
+    REQUEST_COUNT.inc()
+    CHAT_REQUESTS.inc()
+    try:
+        if "count" in question.lower():
+            return {
+                "answer": f"Total indexed chunks: {len(documents)}"
+            }
 
-    if "count" in question.lower():
+        results = search_logs(question)
 
-        return {
-            "answer": f"Total indexed chunks: {len(documents)}"
-        }
-
-    results = search_logs(question)
-
-    context = "\n".join(results[:3])
-    prompt = f"""
+        context = "\n".join(results[:3])
+        prompt = f"""
 You are an AI assistant.
 
 Use ONLY the retrieved context below.
@@ -171,13 +189,16 @@ Question:
 Context:
 {context}
 """
-    answer = analyze_logs(prompt)
+        answer = analyze_logs(prompt)
 
-    return {
-        "question": question,
-        "answer": answer,
-        "retrieved_logs": results[:3]
-    }
+        return {
+            "question": question,
+            "answer": answer,
+            "retrieved_logs": results[:3]
+        }
+    except Exception:
+        ERROR_COUNT.inc()
+        raise
 @app.get("/metrics")
 def metrics():
     return Response(
@@ -189,7 +210,7 @@ def metrics():
 @app.post("/analyze-log")
 async def analyze_log(file: UploadFile = File(...)):
     REQUEST_COUNT.inc()
-    LOG_ANALYSIS_COUNT.inc()
+    LOGS_ANALYZED.inc()
     content = await file.read()
     try:
         text = content.decode("utf-8")
@@ -241,3 +262,5 @@ async def analyze_log(file: UploadFile = File(...)):
         "error_logs": errors[:10],
         "warning_logs": warnings[:10]
     })
+    
+   

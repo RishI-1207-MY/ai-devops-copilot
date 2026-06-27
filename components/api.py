@@ -22,4 +22,4 @@ def post(endpoint, **kwargs):
         f"{BACKEND_URL}/{endpoint}",
         timeout=120,
         **kwargs
-    )haa 
+    )
