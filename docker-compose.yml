@@ -42,27 +42,22 @@ services:
       - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
       - prometheus-data:/prometheus
 
- grafana:
-  image: grafana/grafana-oss
-  container_name: grafana
-
-  restart: unless-stopped
-
-  ports:
-    - "3000:3000"
-
-  depends_on:
-    - prometheus
-
-  environment:
-    GF_SECURITY_ADMIN_USER: admin
-    GF_SECURITY_ADMIN_PASSWORD: admin
-
-  volumes:
-    - grafana-storage:/var/lib/grafana
-    - ./grafana/provisioning/datasources:/etc/grafana/provisioning/datasources
-    - ./grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards
-    - ./grafana/dashboards:/var/lib/grafana/dashboards
+  grafana:
+    image: grafana/grafana-oss
+    container_name: grafana
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    depends_on:
+      - prometheus
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: admin
+    volumes:
+      - grafana-storage:/var/lib/grafana
+      - ./grafana/provisioning/datasources:/etc/grafana/provisioning/datasources
+      - ./grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards
+      - ./grafana/dashboards:/var/lib/grafana/dashboards
 
 volumes:
   prometheus-data:
